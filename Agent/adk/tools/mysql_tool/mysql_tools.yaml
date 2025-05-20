@@ -1,0 +1,46 @@
+sources:
+  my-mysql-source:
+    kind: mysql
+    # These values will be overridden by environment variables
+    host: ${MYSQL_HOST}
+    port: ${MYSQL_PORT}
+    database: ${MYSQL_DATABASE}
+    user: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+
+tools:
+  search-hotel-by-id:
+    kind: mysql-sql
+    source: my-mysql-source
+    description: Search for hotel name by id.
+    parameters:
+      - name: id
+        type: int
+        description: The id of the hotel.
+    statement: SELECT * FROM Hotel WHERE id = $1;
+
+  search-hotel-by-name:
+    kind: mysql-sql
+    source: my-mysql-source
+    description: Search for hotel by exact name.
+    parameters:
+      - name: name
+        type: str
+        description: The exact name of the hotel.
+    statement: SELECT * FROM Hotel WHERE name = $1;
+
+  search-hotel-by-name-like:
+    kind: mysql-sql
+    source: my-mysql-source
+    description: Search for hotels with names containing the specified text.
+    parameters:
+      - name: name_pattern
+        type: str
+        description: The pattern to search for in hotel names.
+    statement: SELECT * FROM Hotel WHERE name LIKE CONCAT('%', $1, '%');
+
+toolsets:
+  hotel-tools:
+    - search-hotel-by-id
+    - search-hotel-by-name
+    - search-hotel-by-name-like
